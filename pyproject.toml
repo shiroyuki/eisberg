@@ -5,7 +5,7 @@ description = "Simplified API for Apache Iceberg"
 authors = [
     {name = "Juti Noppornpitak"}
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 dependencies = [
     "pandas>=2.3.1",
     "pyiceberg[adlfs,hive,pyarrow,s3fs,sql-postgres,sql-sqlite]>=0.9.1",
