@@ -1,0 +1,27 @@
+[project]
+name = "eisberg"
+version = "0.1.0"
+description = "Simplified API for Apache Iceberg"
+authors = [
+    {name = "Juti Noppornpitak"}
+]
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.3.1",
+    "pyiceberg[adlfs,hive,pyarrow,s3fs,sql-postgres,sql-sqlite]>=0.9.1",
+    "sqlalchemy>=2.0.41",
+]
+readme = 'README.md'
+license = 'Apache-2.0'
+license-files = ["LICEN[CS]E"]
+
+[project.optional-dependencies]
+build = ["setuptools"]
+
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["eisberg"]
+exclude = ["tests"]

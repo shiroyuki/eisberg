@@ -1,7 +1,7 @@
 """
 Prototype Iceberg Wrapper
 Copyright Juti Noppornpitak
-Licensed with Apache 2
+Licensed under Apache 2
 """
 from collections import defaultdict
 from typing import Any
@@ -10,6 +10,7 @@ import pyarrow
 from pyiceberg.catalog import load_catalog
 from pyiceberg.schema import Schema, NestedField
 from pyiceberg.types import IcebergType
+
 
 # TODO Implement the DBAPI 2 to use with SQLAlchemy 2
 

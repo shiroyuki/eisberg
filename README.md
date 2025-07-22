@@ -6,3 +6,6 @@ This is made on top of `pyiceberg`.
 
 * `pyiceberg`
   * **NOTICE:** Due to various options on how to install `pyiceberg` with optional dependencies, this is not installed automatically.
+
+## Getting Started
+
