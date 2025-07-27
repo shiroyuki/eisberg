@@ -26,6 +26,14 @@ class Table:
         self._fields: dict[str, NestedField] = dict()
         self._schema: Schema | None = None
 
+    @property
+    def namespace(self):
+        return self._namespace
+
+    @property
+    def name(self):
+        return self._name
+
     def define(self, name: str, kind: IcebergType, required: bool = False) -> "Table":
         self._fields[name] = NestedField(len(self._fields) + 1, name, kind, required=required)
         return self
@@ -39,10 +47,8 @@ class Table:
                 nf
                 for nf in sorted(self._fields.values(), key=lambda nf: nf.field_id)
             ])
-            self._catalog._api.create_table_if_not_exists(
-                f'{self._namespace}.{self._name}',
-                self._schema
-            )
+            self._catalog.api.create_namespace_if_not_exists(self._namespace)
+            self._catalog.api.create_table_if_not_exists(f'{self._namespace}.{self._name}', self._schema)
         else:
             pass  # NO NOOP
 
@@ -76,19 +82,37 @@ class Table:
         return self._catalog._api.load_table(f'{self._namespace}.{self._name}')
 
 
+class Namespace:
+    def __init__(self, catalog: "Catalog", name: str):
+        self._catalog = catalog
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    def list_tables(self) -> list[Table]:
+        return [
+            Table(self._catalog, self._name, i[1])
+            for i in self._catalog.api.list_tables(namespace=self._name)
+        ]
+
+    def table(self, name: str) -> Table:
+        return Table(self._catalog, self._name, name)
+
+
 class Catalog:
     def __init__(self, name: str, **config):
         self._name = name
         self._iceberg_config = config
         self._api = load_catalog(self._name, **self._iceberg_config)
 
-    def get_namespaces(self) -> list[str]:
-        return [i[0] for i in self._api.list_namespaces()]
+    @property
+    def api(self):
+        return self._api
 
-    def get_tables(self, namespace: str):
-        self._api.create_namespace_if_not_exists(namespace)
-        return [i[1] for i in self._api.list_tables(namespace=namespace)]
+    def list_namespaces(self) -> list[Namespace]:
+        return [Namespace(self, i[0]) for i in self._api.list_namespaces()]
 
-    def table(self, namespace: str, name: str) -> Table:
-        """ Get a table by namespace and table name. """
-        return Table(catalog=self, namespace=namespace, name=name)
+    def namespace(self, name: str) -> Namespace:
+        return Namespace(self, name)
